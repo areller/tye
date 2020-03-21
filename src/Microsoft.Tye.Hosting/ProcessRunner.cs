@@ -164,6 +164,7 @@ namespace Microsoft.Tye.Hosting
                     var replica = serviceName + "_" + Guid.NewGuid().ToString().Substring(0, 10).ToLower();
                     var status = new ProcessStatus(service, replica);
                     service.Replicas[replica] = status;
+                    await using var _ = processInfo.StoppedTokenSource.Token.Register(() => status.StoppedTokenSource.Cancel());
 
                     service.ReplicaEvents.OnNext(new ReplicaEvent(ReplicaState.Added, status));
 
@@ -176,7 +177,7 @@ namespace Microsoft.Tye.Hosting
 
                     if (hasPorts)
                     {
-                        status.Ports = ports.Select(p => p.Port);
+                        status.Ports = ports.Select(p => (p.Port, p.Protocol));
                     }
 
                     _logger.LogInformation("Launching service {ServiceName}: {ExePath} {args}", replica, path, args);
@@ -205,7 +206,7 @@ namespace Microsoft.Tye.Hosting
                                 service.ReplicaEvents.OnNext(new ReplicaEvent(ReplicaState.Started, status));
                             },
                             throwOnError: false,
-                            cancellationToken: processInfo.StoppedTokenSource.Token);
+                            cancellationToken: status.StoppedTokenSource.Token);
 
                         status.ExitCode = result.ExitCode;
 
@@ -229,7 +230,6 @@ namespace Microsoft.Tye.Hosting
                     }
 
                     // Remove the replica from the set
-                    service.Replicas.TryRemove(replica, out _);
                     service.ReplicaEvents.OnNext(new ReplicaEvent(ReplicaState.Removed, status));
                 }
             }

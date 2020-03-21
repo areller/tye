@@ -18,6 +18,7 @@ namespace Microsoft.Tye.Hosting.Model
         public RunInfo? RunInfo { get; set; }
         public int Replicas { get; set; } = 1;
         public List<ServiceBinding> Bindings { get; } = new List<ServiceBinding>();
+        public Health? Health { get; set; }
         public List<ConfigurationSource> Configuration { get; } = new List<ConfigurationSource>();
     }
 }

@@ -66,6 +66,13 @@ namespace Microsoft.Tye.ConfigModel
                 var description = new Tye.Hosting.Model.ServiceDescription(service.Name, runInfo)
                 {
                     Replicas = service.Replicas ?? 1,
+                    Health = service.Health is null ? null : new Health()
+                    {
+                        Endpoint = service.Health.Endpoint,
+                        TestInterval = service.Health.TestInterval,
+                        BootPeriod = service.Health.BootPeriod,
+                        GracePeriod = service.Health.GracePeriod
+                    }
                 };
 
                 foreach (var binding in service.Bindings)

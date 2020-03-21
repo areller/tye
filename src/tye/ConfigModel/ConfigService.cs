@@ -22,6 +22,8 @@ namespace Microsoft.Tye.ConfigModel
         public int? Replicas { get; set; }
         public List<ConfigServiceBinding> Bindings { get; set; } = new List<ConfigServiceBinding>();
         public List<ConfigVolume> Volumes { get; set; } = new List<ConfigVolume>();
+        public ConfigHealth? Health { get; set; }
+
         [YamlMember(Alias = "env")]
         public List<ConfigConfigurationSource> Configuration { get; set; } = new List<ConfigConfigurationSource>();
     }

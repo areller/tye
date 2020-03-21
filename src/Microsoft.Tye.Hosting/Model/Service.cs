@@ -25,6 +25,21 @@ namespace Microsoft.Tye.Hosting.Model
 
                 CachedLogs.Enqueue(entry);
             });
+
+            ReplicaEvents.Subscribe(ev =>
+            {
+                if (ev.State == ReplicaState.Removed)
+                {
+                    Replicas.TryRemove(ev.Replica.Name, out _);
+                    return;
+                }
+
+                if (Replicas.TryGetValue(ev.Replica.Name, out var replica))
+                {
+                    //TODO: Check threading and stuff
+                    replica.UpdateState(ev.State);
+                }
+            });
         }
 
         public ServiceDescription Description { get; }
@@ -66,6 +81,6 @@ namespace Microsoft.Tye.Hosting.Model
 
         public Subject<string> Logs { get; } = new Subject<string>();
 
-        public Subject<ReplicaEvent> ReplicaEvents { get; } = new Subject<ReplicaEvent>();
+        public Subject<ReplicaEvent> ReplicaEvents { get; set; } = new Subject<ReplicaEvent>();
     }
 }

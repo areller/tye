@@ -167,7 +167,8 @@ namespace Microsoft.Tye.Hosting
                 replicateDictionary[replica.Key] = new V1ReplicaStatus()
                 {
                     Name = replica.Value.Name,
-                    Ports = replica.Value.Ports
+                    Ports = replica.Value.Ports.Select(p => p.Port),
+                    CurrentState = replica.Value.CurrentState
                 };
             }
 

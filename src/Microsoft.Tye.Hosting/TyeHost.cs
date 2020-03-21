@@ -248,6 +248,7 @@ namespace Microsoft.Tye.Hosting
 
             var processors = new List<IApplicationProcessor>
             {
+                new Hospital(logger),
                 new EventPipeDiagnosticsRunner(logger, diagnosticsCollector),
                 new ProxyService(logger),
                 new DockerRunner(logger),
